@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>老式钢盔赵一航123</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; color: #fff; font-family: 'Impact', '微软雅黑', sans-serif; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .hero { height: 40vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(180deg, #111 0%, #000 100%); border-bottom: 3px solid #ff4500; }
+        .hero h1 { font-size: 50px; color: #ff4500; text-shadow: 0 0 15px #ff4500, 0 0 30px #ff0000; letter-spacing: 8px; margin-bottom: 10px; }
+        .hero p { font-size: 18px; color: #ccc; text-transform: uppercase; letter-spacing: 3px; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .section-title { font-size: 28px; color: #ffd700; margin: 30px 0 20px; padding-bottom: 8px; border-bottom: 2px solid #ffd700; text-transform: uppercase; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: #111; border: 2px solid #333; border-radius: 12px; padding: 20px; transition: all 0.3s; cursor: pointer; }
+        .card:hover { border-color: #ff4500; box-shadow: 0 0 20px #ff4500; transform: translateY(-5px); }
+        .card h3 { color: #ff4500; font-size: 20px; margin-bottom: 10px; }
+        .card a { color: #fff; text-decoration: none; display: block; margin: 8px 0; cursor: pointer; }
+        .card a:hover { color: #ffd700; }
+        footer { text-align: center; padding: 30px; color: #555; font-size: 14px; border-top: 1px solid #222; margin-top: 50px; }
+        .back-btn { position: fixed; top: 20px; left: 20px; padding: 10px 20px; background: #ff4500; color: #fff; border: none; border-radius: 8px; cursor: pointer; z-index: 999; }
+        /* 点击得分游戏样式 */
+        #game-page{background:#111;color:#fff;font-family:Arial;text-align:center;padding-top:50px;}
+        #score{font-size:40px;color:#ff0;margin:20px;}
+        #btn{padding:20px 40px;font-size:24px;background:#f33;color:#fff;border:none;border-radius:20px;cursor:pointer;}
+        #btn:active{transform:scale(0.95);}
+        /* 3D足球游戏样式 */
+        #3d-page{background:#0a0a0a;color:#fff;font-family:system-ui;}
+        #canvas{width:100%;height:75vh;display:block;background:#1a981a;}
+        .ui{position:absolute;top:10px;left:10px;font-size:24px;color:#ffd000;font-weight:bold;}
+        .tip{text-align:center;padding:10px;font-size:16px;color:#ccc;}
+        .ctrl{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);}
+        .ctrl button{padding:12px 24px;background:#ff2222;color:#fff;border:none;border-radius:12px;font-size:16px;cursor:pointer;}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+</head>
+<body>
+    <!-- 首页 -->
+    <div class="page active" id="home-page">
+        <div class="hero">
+            <h1>老式钢盔赵一航</h1>
+            <p>纯手工打造 · 屎山代码 · 游戏合集站</p>
+        </div>
+        <div class="container">
+            <div class="section-title">🔗 快速导航</div>
+            <div class="grid">
+                <div class="card">
+                    <h3>搜索引擎</h3>
+                    <a href="https://www.bing.com" target="_blank">必应</a>
+                    <a href="https://www.google.com" target="_blank">谷歌（国内网络无法访问，需要使用科学上网）</a>
+                </div>
+            </div>
+            <div class="section-title">🛠️ games</div>
+            <div class="grid">
+                <div class="card">
+                    <h3>3D足球</h3>
+                    <a onclick="switchPage('3d-page')">开始游戏</a>
+                    <p>纯3D屎山代码版</p>
+                </div>
+                <div class="card">
+                    <h3>经典小游戏</h3>
+                    <a onclick="switchPage('game-page')">点击得分</a>
+                    <a href="https://classic.minecraft.net/" target="_blank">我的世界1.18JS版（需要键鼠，手机切换桌面网站）</a>
+                    <a href="https://play.mcjs.cc/1.8.8/" target="_blank">我的世界1.8.8 JS版（mcjs.cc，无需键鼠）</a>
+                    <a href="https://flappybird.io/" target="_blank">像素小鸟（纯点击/触屏，无需键鼠）</a>
+                </div>
+            </div>
+        </div>
+        <footer>&copy; 2026 老式钢盔赵一航 版权所有 | 纯手工屎山代码打造</footer>
+    </div>
+
+    <!-- 点击得分游戏页 -->
+    <div class="page" id="game-page">
+        <button class="back-btn" onclick="switchPage('home-page')">返回首页</button>
+        <h1>点击得分</h1>
+        <div id="score">0</div>
+        <button id="btn">点我！</button>
+    </div>
+
+    <!-- 3D足球游戏页 -->
+    <div class="page" id="3d-page">
+        <button class="back-btn" onclick="switchPage('home-page');reset3d()">返回首页</button>
+        <div class="ui">进球：<span id="score3d">0</span></div>
+        <div class="tip">点击屏幕左/中/右 → 控制射门方向，3D真人球员踢球</div>
+        <canvas id="canvas"></canvas>
+        <div class="ctrl"><button onclick="reset3d()">重新开始</button></div>
+    </div>
+
+    <script>
+        // 页面切换核心函数
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            // 3D页面切换时初始化
+            if(pageId === '3d-page' && !window.threeInited) {
+                init3d();
+                window.threeInited = true;
+            }
+        }
+
+        // 点击得分游戏逻辑
+        let s=0;
+        const btn=document.getElementById('btn');
+        const sc=document.getElementById('score');
+        btn.onclick=()=>{s++;sc.textContent=s;};
+
+        // 3D足球游戏逻辑
+        let score3d = 0;
+        let shooting = false;
+        let scene, camera, renderer, ball, player, goalie, scoreEl3d;
+        window.threeInited = false;
+
+        function init3d() {
+            scoreEl3d = document.getElementById("score3d");
+            // 场景初始化
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x229922);
+            scene.fog = new THREE.Fog(0x229922, 10, 25);
+            camera = new THREE.PerspectiveCamera(55, innerWidth/(innerHeight*0.75), 0.1, 100);
+            camera.position.set(0, 4.5, 10);
+            camera.lookAt(0,1,0);
+            renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas"),antialias:true});
+            renderer.setSize(innerWidth, innerHeight*0.75);
+            renderer.shadowMap.enabled = true;
+
+            // 灯光
+            const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambient);
+            const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+            sun.position.set(8,12,6);
+            sun.castShadow = true;
+            scene.add(sun);
+
+            // 地面
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(50,50), new THREE.MeshLambertMaterial({color:0x229922}));
+            ground.rotation.x = -Math.PI/2;
+            ground.receiveShadow = true;
+            scene.add(ground);
+
+            // 球门
+            const goalGroup = new THREE.Group();
+            scene.add(goalGroup);
+            const barMat = new THREE.MeshLambertMaterial({color:0xffffff});
+            const crossbar = new THREE.Mesh(new THREE.BoxGeometry(4.4,0.1,0.1), barMat);
+            crossbar.position.set(0,2.2,-5);
+            goalGroup.add(crossbar);
+            const postGeo = new THREE.BoxGeometry(0.1,2.2,0.1);
+            const postL = new THREE.Mesh(postGeo, barMat);
+            postL.position.set(-2.2,1.1,-5);
+            goalGroup.add(postL);
+            const postR = new THREE.Mesh(postGeo, barMat);
+            postR.position.set(2.2,1.1,-5);
+            goalGroup.add(postR);
+
+            // 足球
+            ball = new THREE.Mesh(new THREE.SphereGeometry(0.28,32,32), new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.3}));
+            ball.position.set(0,0.3,3);
+            ball.castShadow = true;
+            scene.add(ball);
+
+            // 球员创建
+            player = makeHuman(0x0044ff, 0, 3.5);
+            goalie = makeHuman(0xff2222, 0, -4);
+
+            // 射门事件
+            document.getElementById('canvas').addEventListener("click", shoot3d);
+
+            // 渲染循环
+            function loop(){ renderer.render(scene,camera); requestAnimationFrame(loop); }
+            loop();
+        }
+
+        // 创建球员模型
+        function makeHuman(color, x, z) {
+            const group = new THREE.Group();
+            group.position.set(x,0,z);
+            scene.add(group);
+            const skin = new THREE.MeshStandardMaterial({color:0xffdbac});
+            const cloth = new THREE.MeshStandardMaterial({color});
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.32,24,24), skin);
+            head.position.y = 1.8;
+            group.add(head);
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.28,0.35,0.9,16), cloth);
+            body.position.y = 1.2;
+            group.add(body);
+            const armGeo = new THREE.CylinderGeometry(0.12,0.12,0.8,12);
+            const armL = new THREE.Mesh(armGeo, cloth);
+            armL.position.set(-0.45,1.2,0);
+            armL.rotation.z = 0.6;
+            group.add(armL);
+            const armR = new THREE.Mesh(armGeo, cloth);
+            armR.position.set(0.45,1.2,0);
+            armR.rotation.z = -0.6;
+            group.add(armR);
+            const legGeo = new THREE.CylinderGeometry(0.16,0.18,1.0,12);
+            const legL = new THREE.Mesh(legGeo, cloth);
+            legL.position.set(-0.2,0.5,0);
+            group.add(legL);
+            const legR = new THREE.Mesh(legGeo, cloth);
+            legR.position.set(0.2,0.5,0);
+            group.add(legR);
+            return group;
+        }
+
+        // 射门逻辑
+        function shoot3d(e) {
+            if(shooting) return;
+            shooting = true;
+            const w = innerWidth;
+            const x = e.clientX;
+            let tx = 0, gx = 0;
+            if(x < w*0.33){ tx = -1.6; gx = 1.6; }
+            else if(x > w*0.66){ tx = 1.6; gx = -1.6; }
+            else{ tx = 0; gx = 0; }
+            goalie.position.x = gx;
+            player.children[4].rotation.z = 1.0;
+            const fly = setInterval(() => {
+                ball.position.z -= 0.22;
+                ball.position.x += (tx - ball.position.x)*0.09;
+                if(ball.position.z < -4.2){
+                    clearInterval(fly);
+                    if(Math.abs(goalie.position.x - tx) > 0.6){ 
+                        score3d++; 
+                        scoreEl3d.textContent = score3d; 
+                        alert("🎉 3D进球！牛逼！"); 
+                    }
+                    else{ alert("❌ 被守门员扑到了！"); }
+                    setTimeout(() => { 
+                        ball.position.set(0,0.3,3); 
+                        player.children[4].rotation.z = 0; 
+                        shooting = false; 
+                    }, 700);
+                }
+            }, 16);
+        }
+
+        // 3D游戏重置
+        function reset3d() {
+            if(!window.threeInited) return;
+            score3d=0; 
+            scoreEl3d.textContent=0;
+            ball.position.set(0,0.3,3);
+            goalie.position.x=0;
+            player.children[4].rotation.z=0;
+            shooting=false;
+        }
+
+        // 窗口自适应
+        window.onresize = () => {
+            if(window.threeInited) {
+                camera.aspect = innerWidth/(innerHeight*0.75);
+                camera.updateProjectionMatrix();
+                renderer.setSize(innerWidth, innerHeight*0.75);
+            }
+        };
+    </script>
+</body>
+</html>
