@@ -34,6 +34,9 @@
         .tip{text-align:center;padding:10px;font-size:16px;color:#ccc;}
         .ctrl{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);}
         .ctrl button{padding:12px 24px;background:#ff2222;color:#fff;border:none;border-radius:12px;font-size:16px;cursor:pointer;}
+        /* Win11入口专属样式 */
+        .win11-link { color: #0078d4 !important; }
+        .win11-link:hover { color: #0099ff !important; text-shadow: 0 0 8px #0078d4; }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 </head>
@@ -66,12 +69,13 @@
                     <a href="https://classic.minecraft.net/" target="_blank">我的世界1.18JS版（需要键鼠，手机切换桌面网站）</a>
                     <a href="https://play.mcjs.cc/1.8.8/" target="_blank">我的世界1.8.8 JS版（mcjs.cc，无需键鼠）</a>
                     <a href="https://flappybird.io/" target="_blank">像素小鸟（纯点击/触屏，无需键鼠）</a>
+                    <!-- 新增Win11网页版入口 -->
+                    <a href="https://win11.blueedge.me/" target="_blank" class="win11-link">🖥️ Win11网页版（完整系统）</a>
                 </div>
             </div>
         </div>
         <footer>&copy; 2026 老式钢盔赵一航 版权所有 | 纯手工屎山代码打造</footer>
     </div>
-
     <!-- 点击得分游戏页 -->
     <div class="page" id="game-page">
         <button class="back-btn" onclick="switchPage('home-page')">返回首页</button>
@@ -79,7 +83,6 @@
         <div id="score">0</div>
         <button id="btn">点我！</button>
     </div>
-
     <!-- 3D足球游戏页 -->
     <div class="page" id="3d-page">
         <button class="back-btn" onclick="switchPage('home-page');reset3d()">返回首页</button>
@@ -88,7 +91,6 @@
         <canvas id="canvas"></canvas>
         <div class="ctrl"><button onclick="reset3d()">重新开始</button></div>
     </div>
-
     <script>
         // 页面切换核心函数
         function switchPage(pageId) {
@@ -100,19 +102,16 @@
                 window.threeInited = true;
             }
         }
-
         // 点击得分游戏逻辑
         let s=0;
         const btn=document.getElementById('btn');
         const sc=document.getElementById('score');
         btn.onclick=()=>{s++;sc.textContent=s;};
-
         // 3D足球游戏逻辑
         let score3d = 0;
         let shooting = false;
         let scene, camera, renderer, ball, player, goalie, scoreEl3d;
         window.threeInited = false;
-
         function init3d() {
             scoreEl3d = document.getElementById("score3d");
             // 场景初始化
@@ -125,7 +124,6 @@
             renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas"),antialias:true});
             renderer.setSize(innerWidth, innerHeight*0.75);
             renderer.shadowMap.enabled = true;
-
             // 灯光
             const ambient = new THREE.AmbientLight(0xffffff, 0.5);
             scene.add(ambient);
@@ -133,13 +131,11 @@
             sun.position.set(8,12,6);
             sun.castShadow = true;
             scene.add(sun);
-
             // 地面
             const ground = new THREE.Mesh(new THREE.PlaneGeometry(50,50), new THREE.MeshLambertMaterial({color:0x229922}));
             ground.rotation.x = -Math.PI/2;
             ground.receiveShadow = true;
             scene.add(ground);
-
             // 球门
             const goalGroup = new THREE.Group();
             scene.add(goalGroup);
@@ -154,25 +150,20 @@
             const postR = new THREE.Mesh(postGeo, barMat);
             postR.position.set(2.2,1.1,-5);
             goalGroup.add(postR);
-
             // 足球
             ball = new THREE.Mesh(new THREE.SphereGeometry(0.28,32,32), new THREE.MeshStandardMaterial({color:0xffffff, roughness:0.3}));
             ball.position.set(0,0.3,3);
             ball.castShadow = true;
             scene.add(ball);
-
             // 球员创建
             player = makeHuman(0x0044ff, 0, 3.5);
             goalie = makeHuman(0xff2222, 0, -4);
-
             // 射门事件
             document.getElementById('canvas').addEventListener("click", shoot3d);
-
             // 渲染循环
             function loop(){ renderer.render(scene,camera); requestAnimationFrame(loop); }
             loop();
         }
-
         // 创建球员模型
         function makeHuman(color, x, z) {
             const group = new THREE.Group();
@@ -204,7 +195,6 @@
             group.add(legR);
             return group;
         }
-
         // 射门逻辑
         function shoot3d(e) {
             if(shooting) return;
@@ -236,7 +226,6 @@
                 }
             }, 16);
         }
-
         // 3D游戏重置
         function reset3d() {
             if(!window.threeInited) return;
@@ -247,7 +236,6 @@
             player.children[4].rotation.z=0;
             shooting=false;
         }
-
         // 窗口自适应
         window.onresize = () => {
             if(window.threeInited) {
